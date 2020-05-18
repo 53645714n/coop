@@ -1,3 +1,8 @@
+## To Do:
+- threads for lights, maybe add status open and status closed? (e.g. green blinking light is busy, red blinking light is error, red constant is closed, green constant is open?)
+- add sunset times for yesterday and sunrise times for tomorrow in status definition in stead of dirty 'or'
+- create script to deteremine door open and door close times. Maybe add buttons while on it?
+
 # coop
 
 I created this program to automate my chicken coop by opening the door and turning on the light on the inside. Build instructions can be found in the wiki, together with more detailed instructions on how to setup.
