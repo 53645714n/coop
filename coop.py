@@ -1,16 +1,12 @@
 """
 Coop
-
 A simple yet complete program to manage and monitor your coop.
-
 Configuration is done in the config.ini file.
 Logging is done to the file specified in this config.ini file
-
 """
 
 #TODO: Make 'door' run at every whole minute with something like 'if secondold is > second then do this ... secondold = second'.
 #TODO: Make 'door' the main script
-#TODO: Make script a service run at startup
 #TODO: Implement early-open time
 #TODO: Place variables in 'door' and 'startup', now they'll never change after initial startup
 #TODO: Enable debug logging for the LED's
@@ -24,6 +20,8 @@ import RPi.GPIO as GPIO
 import time
 from suntime import Sun
 import threading
+from astral import LocationInfo
+from astral.sun import sun
 
 # config
 config = configparser.ConfigParser()
@@ -34,13 +32,15 @@ logging.basicConfig(filename=config['Settings']['LogFile'], level=config['Settin
                     format='%(asctime)s - %(levelname)s: %(message)s')
 
 # Suntime
+city = LocationInfo("Wageningen", "Netherlands", "Europe/Amsterdam", float(config['Location']['Latitude']), float(config['Location']['Longitude']))
+s = sun(city.observer, date=datetime.now(timezone.utc))
 sun = Sun(float(config['Location']['Latitude']), float(config['Location']['Longitude']))
 now = (datetime.now(timezone.utc))
 offset = int(config['Door']['Offset'])
 doortime_open: int = int(config['Door']['Doortime_Open'])
 doortime_close: int = int(config['Door']['Doortime_Close'])
-opentime = sun.get_sunrise_time()
-closetime = sun.get_sunset_time() + timedelta(minutes=offset)
+opentime = s["dawn"]
+closetime = s["dusk"]
 opentimetomorrow = sun.get_local_sunrise_time(datetime.now() + timedelta(days=1))
 closetimeyesterday = sun.get_local_sunset_time(datetime.now() + timedelta(days=-1)) + timedelta(minutes=offset)
 global stop_threads
@@ -94,6 +94,7 @@ def status_ok():
 
 
 def lights(n):
+    logging.debug("%s lights turned on",n)
     if n == 3:
         GPIO.output(Led1, GPIO.HIGH)
         GPIO.output(Led2, GPIO.HIGH)
@@ -148,7 +149,7 @@ def close_door():
     while True:
         motor_down()
         if GPIO.input(BottomSensor) == False:
-            time.sleep(1) #The sensor is a bit too sensitive (or not well enough placed) so to close entirely it needs another second
+            time.sleep(4) #The sensor is a bit too sensitive (or not well enough placed) so to close entirely it needs another second
             motor_stop()
             logging.info("Door is closed")
             stop_threads = True
@@ -186,12 +187,12 @@ def startup():
     logging.info('Coop started')
     logging.info("The UTC time is: %s", now)
     if GPIO.input(TopSensor) == False and (closetimeyesterday < now < opentime or closetime < now < opentimetomorrow):
-        close_door()
+#        close_door()
         logging.warning("Door was open at startup while it should have been closed")
         lights(0)
         main_loop()
     elif opentime < now < closetime and GPIO.input(BottomSensor) == False:
-        open_door()
+#        open_door()
         logging.debug("Door was closed at startup while it should have been open")
         lights(3)
         main_loop()
@@ -200,7 +201,7 @@ def startup():
         lights(3)
         main_loop()
     elif opentime < now < closetime:
-        open_door()
+#        open_door()
         logging.debug("Doorstatus could not be determined but door should have been and is now open.")
         lights(3)
         main_loop()
@@ -209,7 +210,7 @@ def startup():
         lights(0)
         main_loop()
     elif (closetimeyesterday < now < opentime or closetime < now < opentimetomorrow):
-        close_door()
+#        close_door()
         logging.warning("Doorstatus could not be determined but door should have been and is now closed.")
         lights(0)
         main_loop()
@@ -233,7 +234,7 @@ def door():
     if opentime <= now <= opentime + timedelta(minutes=1):
         logging.warning("Opening door")
         lights(3)
-        open_door()
+#        open_door()
         time.sleep(60)
 #TODO: Fix this, this should prevent the open_door() to run multiple times which in turn should prevent the motor burning for lack of a topsensor.
         logging.debug("Door will open again at %s UTC", next_open)
@@ -242,7 +243,7 @@ def door():
     elif closetime <= now <= closetime + timedelta(minutes=1):
         logging.warning("Closing door")
         lights(0)
-        close_door()
+#        close_door()
         time.sleep(60)
         logging.debug("Door will open at %s UTC", next_open) 
         logging.debug("Door will close again %s minutes after sunset at %s UTC", offset, next_close)
