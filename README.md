@@ -1,8 +1,26 @@
 # coop
 
 I created this program to automate my chicken coop by opening the door and turning on the light on the inside. Build instructions can be found in the wiki, together with more detailed instructions on how to setup.
+## Configuration
+
+### RTC
+https://trick77.com/adding-ds3231-real-time-clock-raspberry-pi-3/
+
+### Turn off all LED's
+Add this to the bottom of /boot/config.txt
+```
+# Disable the ACT LED on the Pi Zero.
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=on
+```
 
 ## Installation
+
+Install git
+```
+sudo apt install git
+```
+
 Simply enter the following command in your terminal
 
 ```
