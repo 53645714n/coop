@@ -56,6 +56,9 @@ SwitchDown = int(config['GPIO']['BttnDwn'])
 GPIO.setup(SwitchDown, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 SwitchUp = int(config['GPIO']['BttnUp'])
 GPIO.setup(SwitchUp, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+# Turn on gpio 19 for front switches
+GPIO.setup(19, GPIO.OUT)
+GPIO.output(19,GPIO.HIGH)
 
 def button_callback(channel):
     if GPIO.input(channel):
