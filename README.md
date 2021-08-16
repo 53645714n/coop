@@ -18,7 +18,7 @@ dtparam=act_led_activelow=on
 
 Install git
 ```
-sudo apt install git
+sudo apt install git python3-pip
 ```
 
 Simply enter the following command in your terminal
