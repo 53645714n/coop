@@ -45,33 +45,9 @@ nano coop.ini
 
 Edit at least your location, the rest *can* be the same. It can also be totally different, up to you. To save, type: ctrl + o, ctrl + m, ctrl + x.
 
-## Startup and shutdown
-To start the script, enter:
-
+## Startup
+To enable the program on startup, enter:
 ```
-python3 coop.py &
-```
-
-To run persistent, after logging off or shutting down the remote pc:
-
-```
-nohup python3 coop.py &
-```
-
-and view the logging:
-
-```
-tail -f coop.log
-```
-
-To stop executing the script find the PID first
-
-```
-pidof python3 coop.py
-```
-
-and type the results after kill -9 like this
-
-```
-kill -9 PID
+sudo mv coop.service /etc/systemd/system
+sudo systemctl enable coop.service
 ```
