@@ -20,9 +20,9 @@ Install git
 ```
 sudo apt install git python3-pip
 ```
-Install suntime module
+Install python modules
 ```
-pip3 install suntime
+pip3 install -r requirements.txt
 ```
 
 Clone the repository
