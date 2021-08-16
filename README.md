@@ -20,9 +20,12 @@ Install git
 ```
 sudo apt install git python3-pip
 ```
+Install suntime module
+```
+pip3 install suntime
+```
 
-Simply enter the following command in your terminal
-
+Clone the repository
 ```
 git clone https://github.com/53645714n/coop.git
 ```
